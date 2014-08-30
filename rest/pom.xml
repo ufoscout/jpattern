@@ -1,0 +1,112 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.jpattern</groupId>
+		<artifactId>jpattern-parent</artifactId>
+		<version>1.2.0</version>
+	</parent>
+	
+	<artifactId>jpattern-rest</artifactId>
+	<packaging>jar</packaging>
+	<version>0.5.3-SNAPSHOT</version>
+
+	<properties>
+		<jetty-version>7.3.1.v20110307</jetty-version>
+		<org.codehaus.jackson-version>1.7.4</org.codehaus.jackson-version>
+	</properties>
+
+	<scm>
+		<connection>scm:svn:https://jpattern.googlecode.com/svn/trunk/rest</connection>
+		<developerConnection>scm:svn:https://jpattern.googlecode.com/svn/trunk/rest</developerConnection>
+		<!-- <tag>HEAD</tag> -->
+		<url>http://code.google.com/p/jpattern</url>
+	</scm>
+
+	<dependencies>
+		<!-- BEGIN - compile scope -->
+		<dependency>
+			<groupId>com.jpattern</groupId>
+			<artifactId>jpattern-shared</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jpattern</groupId>
+			<artifactId>jpattern-logger</artifactId>
+			<version>3.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-lgpl</artifactId>
+			<version>${org.codehaus.jackson-version}</version>
+		</dependency>
+		<!-- END - compile scope -->
+		
+		<!-- BEGIN - test scope -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	    <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-webapp</artifactId>
+            <version>${jetty-version}</version>
+            <scope>test</scope>
+        </dependency>	
+		<dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-jndi</artifactId>
+            <version>${jetty-version}</version>
+            <scope>test</scope>
+        </dependency>
+		<dependency>
+		    <groupId>org.easymock</groupId>
+		    <artifactId>easymock</artifactId>
+		    <version>3.0</version>
+		    <scope>test</scope>
+		</dependency>	
+        <!-- END - test scope -->
+        
+        <!-- BEGIN - provided scope -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- END - provided scope -->
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.mortbay.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>${jetty-version}</version>
+				<configuration>
+					<webAppConfig>
+						<contextPath>/eures</contextPath>
+						<jettyEnvXml>${basedir}/src/test/jetty7/jetty-env.xml</jettyEnvXml>
+						<tempDirectory>target/jetty-temp</tempDirectory>
+						<defaultsDescriptor>${basedir}/src/test/jetty7/webdefault.xml</defaultsDescriptor>
+					</webAppConfig>
+					<connectors>
+						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+							<port>8082</port>
+							<maxIdleTime>720000</maxIdleTime>
+						</connector>
+					</connectors>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

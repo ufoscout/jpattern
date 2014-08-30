@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Configurator Reader">
+	<bannerLeft>
+		<name>Configurator Reader</name>
+		<src>images/apache-maven-project.png</src>
+		<href>#</href>
+	</bannerLeft>
+	<body>
+		<!--
+		<links>
+			<item name="indexer-core"
+				href="#/it.postecom.modules.indexer-core/indexer-core" />
+			<item name="documental"
+				href="#/it.postecom.modules.documental/documental" />
+		</links>
+		-->
+		<menu name="${project.name}">
+			<item name="Introduzione" href="index.html" />
+			<item name="Release Notes" href="release-notes.html" />
+		</menu>
+	
+		<menu name="Documentazione">
+			<item name="Per Iniziare" href="per-iniziare.html" />
+			<item name="Le Variabili" href="le-variabili.html" />			
+			<item name="Altri algoritmi di criptatura" href="altri-algoritmi-di-criptatura.html" />
+			<item name="I tags" href="tutti-i-tags.html" />			
+		<!--
+				<item name="Fase di refactoring" href="fase-refactoring.html" />
+				<item name="Per Iniziare" href="per-iniziare.html" />
+				<item name="Le Relazioni" href="le-relazioni.html" />				
+				<item name="Le Query" href="le-query.html" />								
+				<item name="Query e ResultSetReader custom" href="custom-resultsetreader.html" />		
+				<item name="Query Logger con Log4j" href="query-logger-log4j.html" />						
+				<item name="Ringraziamenti" href="ringraziamenti.html" />				
+								
+				<item name="Model Design" href="model.html" />
+				<item name="Processor Design" href="processor.html" />
+				<item name="Configurazione" href="config.html" />
+				<item name="Installazione" href="install.html" />
+				<item name="Console JMX" href="console.html" />
+			-->
+		</menu>
+
+		${reports}
+
+	</body>
+</project>

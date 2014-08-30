@@ -1,0 +1,36 @@
+<context>
+
+  <beancontext id="jodreplacer" classname="com.jpattern.ioc.property.CryptReplacerPropertyReader">
+	    <entry key="location" value="./applconf/demo-context.properties"/>		
+		<entryref key="encrypter" value="desencrypterbean"/>
+  </beancontext>
+
+  <beancontext id="desencrypterbean" classname="com.jpattern.ioc.desencrypter.DesEncrypter" />
+
+  <beancontext id="myconfig" classname="com.jpattern.ioc.demo.model.ConfiguratorBean">
+
+			<entry key="name" value="applicazione 123"/>
+			<entry key="uploadpath" value="/tmp/"/>
+			<entryref key="datasource" value="mydatasource"/>
+			
+			<entry key="bossEmail" value="claudio.quaresima@postecom.it"/>
+			
+
+			<entrymap key="destinatarimail">
+		      <entry key="claudio.quaresima@postecom.it" value="Claudio Quaresima (Ufficio)"/>
+		      <entry key="claudio.quaresima@gmail.com" value="Claudio Quaresima (Privata)"/>
+		    </entrymap>
+
+
+
+  </beancontext>
+
+  <beancontext id="mydatasource" classname="com.jpattern.ioc.demo.model.MyDataSource">
+				<entry key="user" value="${username}"/>
+				<entry key="password" value="$CRYPT{password}"/>
+				<entry key="url" value="${url}"/>
+				<entry key="driver" value="${driver}"/>
+
+  </beancontext>
+
+</context>

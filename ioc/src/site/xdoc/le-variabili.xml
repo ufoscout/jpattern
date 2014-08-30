@@ -1,0 +1,133 @@
+<document>
+	<properties>
+		<author email="claudio.quaresima@postecom.it">
+			Claudio Quaresima
+		</author>
+		<title>Configurator Reader - Le Variabili</title>
+	</properties>
+
+	<head></head>
+
+	<body>
+		<section name="Le Variabili">
+				<p>In determinati contesti e' utile non avere all'interno dell'xml di configurazione informazioni specifiche dell'ambiente, magari per esigenze di portabilita' ...o altro motivo, per cui e' utile avere la possibilita' di fa valorizzare le variabili indicate nell'xml con un file esterno in questo caso un property file.</p>
+		<subsection name="Il Replace delle Variabili">					
+					<p>
+							Riprendendo l'xml di prima aggiungiamo il seguente bean:
+					</p>
+					<source>
+&lt;context&gt;
+
+	&lt;beancontext id="jodreplacer" classname="org.jod.configreader.property.ReplacerPropertyReader"&gt;
+		&lt;entry key="location" value="./demo-context.properties"/&gt;		
+	&lt;/beancontext&gt;
+
+	&lt;beancontext id="myconfig" classname="org.jod.configreader.demo.model.ConfiguratorBean"&gt;
+	
+		&lt;entry key="name" value="applicazione 123"/&gt;
+		&lt;entry key="uploadpath" value="/tmp/"/&gt;
+		&lt;entryref key="datasource" value="mydatasource"/&gt;
+				
+		&lt;entrymap key="destinatarimail"&gt;
+			&lt;entry key="claudio.quaresima@postecom.it" value="Claudio Quaresima (Ufficio)"/&gt;
+			&lt;entry key="claudio.quaresima@gmail.com" value="Claudio Quaresima (Privata)"/&gt;
+		&lt;/entrymap&gt;
+	
+	&lt;/beancontext&gt;
+
+	&lt;beancontext id="mydatasource" classname="org.jod.configreader.demo.model.MyDataSource"&gt;
+		&lt;entry key="user" value="${username}"/&gt;
+		&lt;entry key="password" value="${password}"/&gt;
+		&lt;entry key="url" value="${url}"/&gt;
+		&lt;entry key="driver" value="${driver}"/&gt;
+	&lt;/beancontext&gt;
+
+&lt;/context&gt;
+
+					</source>	
+					<br/>
+					<p>Quello che abbiamo fatto e' stato dire al configreader: le variabili ${username}, ${password} ecc.. le trovi definite nel file di property demo-context.properties
+					<br/>
+					Ovviamente il configreader per leggerle usa l'oggetto ReplacerPropertyReader
+					<br/>
+					Anche se ovvio riporto il file di property
+					</p>
+					<source>
+username=dbunico
+password=unicodb
+url=jdbc:oracle:thin:@192.168.116.16:1521:TESTAPDB
+driver=oracle.jdbc.driver.OracleDriver						
+					</source>
+		</subsection>
+		<br/>
+		<subsection name="Il Replace delle Variabili Criptate">			
+		In alcuni contesti puo' essere richiesto di non utilizzare file di configurazione con password scritte in chiaro, per cui il configreader fornisce una implementazione semplice per decriptare password, per utilizzare questa caratteristica occore modificare il file xml dell'esempio cambiando il tipo di replacer e il tipo di variabile
+		<br/>
+		<source>
+&lt;context&gt;
+
+	&lt;beancontext id="jodreplacer" classname="org.jod.configreader.property.CryptReplacerPropertyReader"&gt;
+		&lt;entry key="location" value="./demo-context.properties"/&gt;		
+		&lt;entryref key="encrypter" value="desencrypterbean"/&gt;		
+	&lt;/beancontext&gt;
+
+	&lt;beancontext id="desencrypterbean" classname="org.jod.configreader.desencrypter.DesEncrypter"/&gt;
+
+	&lt;beancontext id="myconfig" classname="org.jod.configreader.demo.model.ConfiguratorBean"&gt;
+	
+		&lt;entry key="name" value="applicazione 123"/&gt;
+		&lt;entry key="uploadpath" value="/tmp/"/&gt;
+		&lt;entryref key="datasource" value="mydatasource"/&gt;
+				
+		&lt;entrymap key="destinatarimail"&gt;
+			&lt;entry key="claudio.quaresima@postecom.it" value="Claudio Quaresima (Ufficio)"/&gt;
+			&lt;entry key="claudio.quaresima@gmail.com" value="Claudio Quaresima (Privata)"/&gt;
+		&lt;/entrymap&gt;
+	
+	&lt;/beancontext&gt;
+
+	&lt;beancontext id="mydatasource" classname="org.jod.configreader.demo.model.MyDataSource"&gt;
+		&lt;entry key="user" value="${username}"/&gt;
+		&lt;entry key="password" value="$CRYPT{password}"/&gt;
+		&lt;entry key="url" value="${url}"/&gt;
+		&lt;entry key="driver" value="${driver}"/&gt;
+	&lt;/beancontext&gt;
+
+&lt;/context&gt;
+		</source>	
+		<p>
+				In sostanza abbiamo:
+				<UL>
+					<LI/>cambiato il replacer ReplacerPropertyReader con il CryptReplacerPropertyReader
+					<LI/>aggiunto al CryptReplacerPropertyReader una property ref che e' proprio l'algoritmo di criptatura che quindi puo' essere scritto ad hoc e iniettato al posto di quello di default, se si vuole o se si hanno particolari esigenze. (il DesEncrypter di default e' un semplice MD5)
+					<LI/>sostituito il nome delle varibili ad esempio la password del db da  ${password} a $CRYPT{password}
+			</UL>
+			<br/>
+			L'ultima cosa che bisogna fare e' criptare la password e scriverla criptata nel file di property
+		</p>	
+		<p>
+				Per fare questo si puo' utilizzare una classe di utilita' presente nella distribuzione del configreader (ovviamente funziona solo con il DesEncrypter di default):
+		</p>
+		<source>
+java -cp configreader-1.0-SNAPSHOT.jar org.jod.configreader.util.Encrypt unicodb
+		</source>
+		<p>
+			che accetta come parametro la password in chiaro e torna quella criptata
+		</p>	
+		<source>
+Orginal  string: unicodb
+Crypted string: cwNy62cTeHc=			
+		</source>	
+		<p>
+			Quindi il file di property diventera'
+		</p>	
+		<source>
+username=dbunico
+password=cwNy62cTeHc=
+url=jdbc:oracle:thin:@192.168.116.16:1521:TESTAPDB
+driver=oracle.jdbc.driver.OracleDriver				
+		</source>	
+		</subsection>
+		</section>
+	</body>
+</document>	

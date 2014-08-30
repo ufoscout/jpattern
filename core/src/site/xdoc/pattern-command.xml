@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+	<properties>
+		<author email="ufoscout@yahoo">
+			Francesco Cina'
+		</author>
+		<title>jPattern Core - Command Pattern</title>
+	</properties>
+
+	<head></head>
+
+	<body>
+		<section name="Command pattern">
+			Una implementazione del pattern Command e' fornita dal package org.jusk.core.command.
+			Tale implementazione prevede anche la possibilita' di rollback sulle operazioni effettuate.
+		</section>
+		
+		<section name="Utilizzare i Command">
+		L'utilizzo del pattern Command permette di scrivere porzioni di codice in maniera pulita e omogenea, favorisce 
+		la modularita' ed il riuso, contribuisce ad abbattere la complessita' del codice riducendo elegantemente 
+		l'utilizzo di costrutti if-else tramite la possibilita' di concatenare i command.
+		
+		Un rapido esempio:
+		<source>
+		IResource from = ....;
+		Iresource to = ....;
+		ICommand command = new FileCopyCommand( new StringBuffer("nomefile.txt"), from, to);
+		command = new FileRenameCommand( new StringBuffer("nomefile.txt"), new StringBuffer("nuovonomefile.txt"), to, command);
+		command = new FileDeleteCommand( new StringBuffer("nomefile.txt"), from, command);
+		command.visit(applicationService);
+		command.exec();
+		</source> 
+
+		Stiamo cercando di: 
+		<ul>
+			<li>copiare il file "nomefile.txt" dalla posizione 'from' alla posizione 'to'</li>
+			<li>rinominare il file "nomefile.txt" nella posizione 'to' in "nuovonomefile.txt"</li>
+			<li>eliminare il file "nomefile.txt" nella posizione 'from'</li>
+		</ul>
+		
+		Con la chiamata 'command.visit(applicationService)' inietto sulla catena di Command il provider dei servizi (vedere <a href="dependency-injection.html">IOC and Dependency injection</a>)
+		<br/><br/>
+		Con questa breve porzione di codice stiamo effettuando una serie di operazioni concatenate: tra i parametri dei comandi 
+		'FileRenameCommand' e 'FileDeleteCommand' viene passato un riferimento al command precedente, in questo modo nel 
+		momento in cui faccio command.exec() viene eseguita l'intera catena nell'ordine implementato.
+		Qualora uno dei command vada in errore, i command successivi non vengono eseguiti, e viene chiamato il rollback
+		sui command eseguiti.		
+		
+		</section>
+		
+		<section name="Creare un nuovo Command">
+		Per creare un nuovo Command e' necessario implementare la classe astratta ACommand. Ed implementare i due metodi:
+		
+		<source>
+		    protected abstract void result(IResult result);
+    
+    		protected abstract void internalRollBack();
+		</source>
+		
+		Il metodo 'result' viene chiamato a catena al momento in cui faccio command.exec().
+		Il metodo 'internalRollBack()' viene chiamato sui command eseguiti con successo nel caso in cui 
+		un metodo della catena vada in errore.
+		
+		</section>
+	</body>
+</document>	

@@ -1,0 +1,33 @@
+<document>
+	<properties>
+		<author email="claudio.quaresima@postecom.it">
+			Claudio Quaresima
+		</author>
+		<title>Configurator Reader - Altri algortmi di criptatura</title>
+	</properties>
+
+	<head></head>
+
+	<body>
+		<section name="Altri algoritmi di criptatura">
+			<p>
+					Se dovesse essere necessario utilizzare algoritmi di criptatura particolari o cmq diversi da quello di default
+					basta implementare una o piu classi che rispettino il seguente contratto e iniettarlo al posto di quello di default:
+			</p>
+			<source>
+package org.jod.configreader;
+/**
+ * 
+ * @author Claudio Quaresima - claudio.quaresima@gmail.com - 26/ott/08 15:49:08
+ * @version $Id: $
+ */
+public interface IEncrypter {
+
+    String encrypt(String aString);
+    
+    String decrypt(String aString);
+}				
+			</source>
+		</section>
+	</body>
+</document>	

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<!-- POM file generated with GWT webAppCreator -->
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.jpattern</groupId>
+		<artifactId>jpattern-parent</artifactId>
+		<version>1.2.0</version>
+	</parent>
+
+	<artifactId>jpattern-gwt</artifactId>
+	<packaging>jar</packaging>
+	<version>2.45.8-SNAPSHOT</version>
+
+	<properties>
+		<gwt.version>2.4.0</gwt.version>
+		<gwt.plugin.version>2.4.0</gwt.plugin.version>
+		<org.codehaus.jackson-version>1.7.4</org.codehaus.jackson-version>
+		<com.sun.jersey-version>1.6</com.sun.jersey-version>
+		<webApp.filename>gwtpattern-core-test</webApp.filename>
+		<gwt.compile.draft>false</gwt.compile.draft>
+		<gwt.compile.optimizationLevel>9</gwt.compile.optimizationLevel>
+	</properties>
+
+	<scm>
+		<connection>scm:svn:https://jpattern.googlecode.com/svn/trunk/gwt</connection>
+		<developerConnection>scm:svn:https://jpattern.googlecode.com/svn/trunk/gwt</developerConnection>
+		<!-- <tag>HEAD</tag> -->
+		<url>http://code.google.com/p/jpattern</url>
+	</scm>
+
+	<repositories>
+		<!-- Needed by Jersey -->
+		<repository>
+			<id>maven2-repository.dev.java.net</id>
+			<name>Java.net Repository for Maven</name>
+			<url>http://download.java.net/maven/2/</url>
+			<layout>default</layout>
+		</repository>
+		<repository>
+			<id>gwtprojsonserializer</id>
+			<url>http://gwtprojsonserializer.googlecode.com/svn/repo</url>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<!-- BEGIN - compile scope -->
+		<dependency>
+			<groupId>com.jpattern</groupId>
+			<artifactId>jpattern-shared</artifactId>
+			<version>3.5.2</version>
+		</dependency>
+		<!-- END - compile scope -->
+
+		<!-- BEGIN - provided scope -->
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-servlet</artifactId>
+			<version>${gwt.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-user</artifactId>
+			<version>${gwt.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Needed by gwt to do some operation with json objects -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20090211</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- END - provided scope -->
+
+		<!-- BEGIN - test scope -->
+		<dependency>
+			<groupId>org.fusesource.restygwt</groupId>
+			<artifactId>restygwt</artifactId>
+			<version>1.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency> 
+		   <groupId>com.kfuntak.gwt.json</groupId> 
+		   <artifactId>gwtprojsonserializer</artifactId> 
+		   <version>1.0.4</version>
+		   <scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.7</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.jpattern</groupId>
+			<artifactId>jpattern-core</artifactId>
+			<version>3.3.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-dev</artifactId>
+			<version>${gwt.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>${com.sun.jersey-version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey.contribs</groupId>
+			<artifactId>jersey-multipart</artifactId>
+			<version>${com.sun.jersey-version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-core-lgpl</artifactId>
+			<version>${org.codehaus.jackson-version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-lgpl</artifactId>
+			<version>${org.codehaus.jackson-version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-xc</artifactId>
+			<version>${org.codehaus.jackson-version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-jaxrs</artifactId>
+			<version>${org.codehaus.jackson-version}</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- END - test scope -->
+	</dependencies>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>${basedir}/src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>${basedir}/src/main/java</directory>
+			</resource>
+		</resources>
+		<!-- <finalName>${webApp.filename}</finalName> -->
+		<plugins>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<!-- <version>2.6</version> -->
+				<configuration>
+					<additionalClasspathElements>
+						<additionalClasspathElement>${project.build.sourceDirectory}</additionalClasspathElement>
+						<additionalClasspathElement>${project.build.testSourceDirectory}</additionalClasspathElement>
+					</additionalClasspathElements>
+					<useManifestOnlyJar>false</useManifestOnlyJar>
+					<forkMode>always</forkMode>
+					<systemProperties>
+						<property>
+							<name>gwt.args</name>
+							<value>-out target/${webApp.filename}</value>
+						</property>
+					</systemProperties>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>gwt-maven-plugin</artifactId>
+				<version>${gwt.plugin.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>compile</goal>
+							<!-- <goal>test</goal> -->
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<runTarget>cjcms.html</runTarget>
+					<draftCompile>${gwt.compile.draft}</draftCompile>
+					<optimizationLevel>${gwt.compile.optimizationLevel}</optimizationLevel>
+					<mode>htmlunit</mode>
+					<deploy>${project.build.directory}/gwt-deploy</deploy>
+					<extra>${project.build.directory}/gwt-extra</extra>
+					<extraJvmArgs>-Xmx512M</extraJvmArgs>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>com.google.gwt</groupId>
+						<artifactId>gwt-user</artifactId>
+						<version>${gwt.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>com.google.gwt</groupId>
+						<artifactId>gwt-dev</artifactId>
+						<version>${gwt.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+
+			<!-- Copy static web files before executing gwt:run -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>exploded</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<webappDirectory>target/${webApp.filename}</webappDirectory>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.mortbay.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>7.3.1.v20110307</version>
+				<configuration>
+					<webAppSourceDirectory>target/${webApp.filename}</webAppSourceDirectory>
+					<webAppConfig>
+						<contextPath>/${webApp.filename}</contextPath>
+						<jettyEnvXml>${basedir}/src/test/jetty7/jetty-env.xml</jettyEnvXml>
+						<tempDirectory>target/jetty-temp</tempDirectory>
+						<defaultsDescriptor>${basedir}/src/test/jetty7/webdefault.xml</defaultsDescriptor>
+					</webAppConfig>
+					<useTestClasspath>true</useTestClasspath>
+					<connectors>
+						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+							<port>8080</port>
+							<maxIdleTime>720000</maxIdleTime>
+						</connector>
+					</connectors>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
+
+</project>

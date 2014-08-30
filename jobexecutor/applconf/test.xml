@@ -1,0 +1,255 @@
+
+<context>
+<!--
+  <beancontext id="jodreplacer" classname="com.jpattern.ioc.property.CryptReplacerPropertyReader">
+-->
+
+  <extracontext value="./applconf/extracontext/extracontext1.xml"/>
+  <extracontext value="./applconf/extracontext/extracontext2.xml"/>
+
+  <beancontext id="jodreplacer" classname="com.jpattern.ioc.property.PropertyReaderComposite">
+	    <entrylist key="propertyReaderList">
+	    	<entryref value="jodreplacer1"/>
+		</entrylist>		
+  </beancontext>
+
+  <beancontext id="jodreplacer1" classname="com.jpattern.ioc.property.CryptReplacerPropertyReader">
+	    <entry key="location" value="./applconf/test.properties"/>		
+		<entryref key="encrypter" value="desencrypterbean"/>	
+  </beancontext>
+
+  <beancontext id="desencrypterbean" classname="com.jpattern.ioc.desencrypter.DesEncrypter" />	
+  
+
+
+  <beancontext id="beanuno" classname="com.jpattern.ioc.model.xml.BeanUno">
+    
+    <entry key="attributereplaced" value="${prop3.prop}"/>
+    <entry key="attributereplacedcrypted" value="$CRYPT{prop4.prop}"/>
+
+	<entry key="nome" value="claudio"/>
+    <entry key="cognome" value="quaresima"/>
+    <entryref key="residenza" value="residenzabean"/>
+
+
+  
+    <entrymap key="maptelefoni">
+      <entry key="telefonofisso" value="09876543"/>
+      <entry key="telefonocellurare" value="12344566"/>
+    </entrymap>
+    
+    <entrymap key="mapmezzi">
+      <entry key="macchina" value="open corsa"/>
+      <entry key="moto" value="nevada guzzi"/>
+      <entry key="barca" value="magari ce l'avessi"/>    
+      <entryref key="casa" value="residenzabeanformap"/>  
+      <entryref key="casamia" value="residenzabean"/>
+    </entrymap>
+
+  </beancontext>
+
+  <beancontext id="residenzabean" classname="com.jpattern.ioc.model.xml.Residenza">
+	<entry key="indirizzo" value="via di casa mia"/>
+  </beancontext>
+
+  <beancontext id="residenzabeanformap" classname="com.jpattern.ioc.model.xml.Residenza">
+	<entry key="indirizzo" value="via di casa sua"/>
+  </beancontext>
+  
+  <beancontext id="beanconparametri1" classname="com.jpattern.ioc.model.xml.BeanUno">
+  	<parameter value="nomeDaCostruttore"/>
+  	<parameter value="cognomeDaCostruttore"/>
+	<entryref key="residenza" value="residenzabean"/>
+  </beancontext>
+  
+  <beancontext id="beanconparametri2" classname="com.jpattern.ioc.model.xml.BeanUno">
+  	<parameter value="nomeDaCostruttore2"/>
+  	<parameter value="cognomeDaCostruttore2"/>
+	<parameterref value="residenzabeanformap"/>
+  </beancontext>
+  
+  <beancontext id="beanconparametri3" classname="com.jpattern.ioc.model.xml.BeanUno">
+  	<parameter value="nomeDaCostruttore3"/>
+  	<parameter value="cognomeDaCostruttore3"/>
+    <parametermap>
+      <entry key="macchina" value="open corsa"/>
+      <entry key="moto" value="honda hornet"/>
+      <entryref key="casa" value="residenzabeanformap"/>  
+      <entryref key="casamia" value="residenzabean"/>
+    </parametermap>
+  </beancontext>
+  
+    <beancontext id="beanConInteger" classname="com.jpattern.ioc.model.xml.ManyConstructors">
+	  	<parameter value="17" type="Integer"/>
+  	</beancontext>
+	
+	<beancontext id="beanConDouble" classname="com.jpattern.ioc.model.xml.ManyConstructors">
+	  	<parameter value="17" type="Double"/>
+  	</beancontext>
+	
+	<beancontext id="beanConByte" classname="com.jpattern.ioc.model.xml.ManyConstructors">
+	  	<parameter value="17" type="Byte"/>
+  	</beancontext>
+	
+	<beancontext id="beanConShort" classname="com.jpattern.ioc.model.xml.ManyConstructors">
+	  	<parameter value="17" type="Short"/>
+  	</beancontext>
+	
+	<beancontext id="beanConLong" classname="com.jpattern.ioc.model.xml.ManyConstructors">
+	  	<parameter value="17" type="Long"/>
+  	</beancontext>
+	
+	<beancontext id="beanConFloat" classname="com.jpattern.ioc.model.xml.ManyConstructors">
+	  	<parameter value="17" type="Float"/>
+  	</beancontext>
+	
+	<beancontext id="beanConCharacter" classname="com.jpattern.ioc.model.xml.ManyConstructors">
+	  	<parameter value="17" type="Character"/>
+  	</beancontext>
+	
+	<beancontext id="beanConStringBuffer" classname="com.jpattern.ioc.model.xml.ManyConstructors">
+	  	<parameter value="17" type="StringBuffer"/>
+  	</beancontext>	
+	
+	<beancontext id="beanConBoolean" classname="com.jpattern.ioc.model.xml.ManyConstructors">
+	  	<parameter value="TrUe" type="Boolean"/>
+  	</beancontext>
+	
+	<beancontext id="beanConBigDecimal" classname="com.jpattern.ioc.model.xml.ManyConstructors">
+	  	<parameter value="17" type="BigDecimal"/>
+  	</beancontext>
+	
+	<beancontext id="beanConBigInteger" classname="com.jpattern.ioc.model.xml.ManyConstructors">
+	  	<parameter value="17" type="BigInteger"/>
+  	</beancontext>
+	
+	<beancontext id="beanCon5Parametri" classname="com.jpattern.ioc.model.xml.ManyConstructors">
+		<parameter value="${prop.StringBuffer}" type="StringBuffer"/>
+	  	<parameter value="${prop.BigInteger}" type="BigInteger"/>
+		<parameter value="${prop.Character}" type="Character"/>
+		<parameter value="${prop.Boolean}" type="Boolean"/>
+		<parameter value="${prop.String}" />
+  	</beancontext>
+  	
+  	<beancontext id="beanCon5ParametriEPrimitive" classname="com.jpattern.ioc.model.xml.ManyConstructors">
+		<parameter value="${prop.StringBuffer}" type="StringBuffer"/>
+	  	<parameter value="${prop.BigInteger}" type="int"/>
+		<parameter value="${prop.Character}" type="Character"/>
+		<parameter value="${prop.Boolean}" type="boolean"/>
+		<parameter value="${prop.String}" />
+  	</beancontext>
+  	
+  	 <beancontext id="beanCon6ParametriEPrimitive" classname="com.jpattern.ioc.model.xml.ManyConstructors">
+		<parameter value="${prop.StringBuffer}" type="StringBuffer"/>
+	  	<parameter value="${prop.BigInteger}" type="int"/>
+		<parameter value="${prop.Character}" type="Character"/>
+		<parameter value="${prop.Boolean}" type="boolean"/>
+		<parameter value="${prop.String}" />
+		<parameter value="${prop.String}" />
+  	</beancontext>
+	
+	
+	<beancontext id="beandue1" classname="com.jpattern.ioc.model.xml.BeanDue">
+        <entry key="stringa" value="ufo"/>
+	</beancontext>
+	
+	<beancontext id="beandue2" classname="com.jpattern.ioc.model.xml.BeanDue">
+        <entry key="integer" value="ufo" type="Integer"/>
+	</beancontext>
+	
+	<beancontext id="beandue3" classname="com.jpattern.ioc.model.xml.BeanDue">
+        <entry key="integer" value="ufo" type="int"/>
+	</beancontext>
+
+	<beancontext id="beandue4" classname="com.jpattern.ioc.model.xml.BeanDue">
+        <entry key="int" value="ufo" type="int"/>
+	</beancontext>
+	
+	<beancontext id="beandue5" classname="com.jpattern.ioc.model.xml.BeanDue">
+        <entry key="int" value="ufo" type="Integer"/>
+	</beancontext>
+	
+	<beancontext id="beanListUno1" classname="com.jpattern.ioc.model.xml.BeanListUno">
+	    <entrylist key="valoriList">
+	      <entry value="open corsa"/>
+	      <entry value="honda hornet"/>
+	      <entry value="mountain bike"/>
+	      <entry value="honda hornet 2"/>
+	      <entry value="mountain bike 2"/>
+	      <entry value="honda hornet 2"/>
+	    </entrylist>
+	    <entrylist key="valori2List">
+	      <entry value="10" type="Integer"/>
+	      <entry value="20" type="Integer"/>
+	    </entrylist>
+	</beancontext>
+	
+	<beancontext id="beanListUno2" classname="com.jpattern.ioc.model.xml.BeanListUno">
+	    <entrylist key="valoriList">
+	      <entrylist>
+	      	<entry value="ciao nella lista"/>
+	      </entrylist>
+	      <entrymap>
+	      	<entry key="uno" value="UNO"/>
+	      	<entry key="due" value="DUE"/>
+	      </entrymap>
+	      <entryref value="beanCon_int"/>
+	      <entry value="Ciao"/>
+	    </entrylist>
+	</beancontext>
+	
+	<beancontext id="beanListUno3" classname="com.jpattern.ioc.model.xml.BeanListUno">
+	    <parameterlist>
+	      <entrylist>
+	      	<entry value="ciao nella lista"/>
+	      </entrylist>
+	      <entrymap>
+	      	<entry key="uno" value="UNO"/>
+	      	<entry key="due" value="DUE"/>
+	      </entrymap>
+	      <entryref value="beanCon_int"/>
+	      <entry value="Ciao"/>
+	    </parameterlist>
+	    <entrylist key="valori2List">
+	      <entry value="10" type="Integer"/>
+	      <entry value="20" type="Integer"/>
+	    </entrylist>
+	</beancontext>
+		
+	<beancontext id="beanCon_int" classname="com.jpattern.ioc.model.xml.ManyConstructors">
+	  	<parameter value="123" type="int"/>
+  	</beancontext>
+  	
+  	<beancontext id="beanCon_int_errato" classname="com.jpattern.ioc.model.xml.ManyConstructors">
+	  	<parameter value="aaaaaaaa" type="int"/>
+  	</beancontext>
+  	
+  	<beancontext id="beanCon_double" classname="com.jpattern.ioc.model.xml.ManyConstructors">
+	  	<parameter value="124" type="double"/>
+  	</beancontext>
+  	
+  	<beancontext id="beanCon_short" classname="com.jpattern.ioc.model.xml.ManyConstructors">
+	  	<parameter value="125" type="short"/>
+  	</beancontext>
+  	
+  	<beancontext id="beanCon_byte" classname="com.jpattern.ioc.model.xml.ManyConstructors">
+	  	<parameter value="126" type="byte"/>
+  	</beancontext>
+  	
+  	<beancontext id="beanCon_long" classname="com.jpattern.ioc.model.xml.ManyConstructors">
+	  	<parameter value="127" type="long"/>
+  	</beancontext>
+  	
+  	<beancontext id="beanCon_float" classname="com.jpattern.ioc.model.xml.ManyConstructors">
+	  	<parameter value="128.65" type="float"/>
+  	</beancontext>
+  	
+  	<beancontext id="beanCon_boolean" classname="com.jpattern.ioc.model.xml.ManyConstructors">
+	  	<parameter value="true" type="boolean"/>
+  	</beancontext>
+  	
+  	<beancontext id="beanCon_char" classname="com.jpattern.ioc.model.xml.ManyConstructors">
+	  	<parameter value="prendeSoloLaPrimaLettera" type="char"/>
+  	</beancontext>
+	
+</context>

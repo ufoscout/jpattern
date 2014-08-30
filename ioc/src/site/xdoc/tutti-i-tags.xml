@@ -1,0 +1,123 @@
+<document>
+	<properties>
+		<author email="francesco.cina@postecom.it">
+			Francesco Cina
+		</author>
+		<title>Configurator Reader - I tags xml</title>
+	</properties>
+
+	<head></head>
+
+	<body>
+		<section name="Tutti i tags">
+				<p>Una rapida panoramica di tutti i tags utilizzabili all'interno dell'xml</p>
+				<subsection name="Elenco dei tag disponibili">					
+					<source>
+						<ul>
+						  <li>context: main tag</li>
+						  <li>extracontext: permettere di definire altri file xml in cui definire i beancontext</li>
+						  <li>beancontext: definizione di un bean generico</li>
+						  <li>entry: iniezione sul getter di un oggetto di tipo String, o di tipo definito dall'attributo "type"</li>
+						  <li>entryref: iniezione sul getter di un bean generico</li>
+						  <li>entrymap: iniezione sul getter di un oggetto di tipo java.util.Map</li>
+						  <li>entrylist: iniezione sul getter di un oggetto di tipo java.util.List</li>
+						  <li>parameter: iniezione sul costruttore di un oggetto di tipo String, o di tipo definito dall'attributo "type"</li>
+						  <li>parameterref: iniezione sul costruttore di un bean generico</li>
+						  <li>parametermap: iniezione sul costruttore di un oggetto di tipo java.util.Map</li>
+						  <li>parameterlist: iniezione sul costruttore di un oggetto di tipo java.util.List</li>
+				  		</ul>			
+					</source>
+					<br/>
+						Per i tag utilizzati all'interno di "entrylist" o di "parameterlist" non e' necessario valorizzare l'attributo "key".
+					<br/>
+					<br/>					
+				I valori ammessi per l'attributo "type" sono i seguenti (autoesplicativi):
+				<ul>
+				  <li>String (è il valore di default)</li>
+				  <li>Integer</li>
+				  <li>Double</li>
+				  <li>Byte</li>
+				  <li>Short</li>
+				  <li>Long</li>
+				  <li>Float</li>
+				  <li>Character</li>
+				  <li>Boolean</li>
+				  <li>StringBuffer</li>
+				  <li>BigInteger</li>
+				  <li>BigDecimal</li>
+				</ul>
+				<br/>
+				Per iniettare tipi primitive, utizzare i seguenti valori per l'attributo "type":
+				<ul>
+				  <li>int</li>
+				  <li>double</li>
+				  <li>byte</li>
+				  <li>short</li>
+				  <li>long</li>
+				  <li>float</li>
+				  <li>char</li>
+				  <li>boolean</li>
+				</ul>
+				<i><b>ATTENZIONE:</b> l'iniezione sul costruttore di tipi primitive richiede una jvm 1.5 o superiore.</i>
+	
+				</subsection>
+			<subsection name="Esempio di file xml di configurazione">					
+					<source>
+&lt;context&gt;
+	
+	&lt;extracontext value="pathAdUnAltroFileDiContext.xml"/&gt;
+
+	&lt;beancontext id="jodreplacer" classname="org.jod.configreader.property.ReplacerPropertyReader"&gt;
+		&lt;entry key="location" value="./demo-context.properties"/&gt;		
+	&lt;/beancontext&gt;
+
+	&lt;beancontext id="myconfig" classname="org.jod.configreader.demo.model.ConfiguratorBean"&gt;
+	
+		&lt;entry key="name" value="applicazione 123"/&gt;
+		&lt;entry key="uploadpath" value="/tmp/"/&gt;
+		&lt;entryref key="datasource" value="mydatasource"/&gt;
+				
+		&lt;entrymap key="destinatarimail"&gt;
+			&lt;entry key="claudio.quaresima@postecom.it" value="Claudio Quaresima (Ufficio)"/&gt;
+			&lt;entry key="claudio.quaresima@gmail.com" value="Claudio Quaresima (Privata)"/&gt;
+		&lt;/entrymap&gt;
+		
+	&lt;/beancontext&gt;
+
+	&lt;beancontext id="mydatasource" classname="org.jod.configreader.demo.model.MyDataSource"&gt;
+		&lt;entry key="user" value="${username}"/&gt;
+		&lt;entry key="password" value="$CRYPT{password}"/&gt;
+		&lt;entry key="url" value="${url}"/&gt;
+		&lt;entry key="driver" value="${driver}"/&gt;
+	&lt;/beancontext&gt;
+	
+	&lt;beancontext id="mymachinainvendita" classname="auto.MacchinaInVendita"&gt;	
+		&lt;parameterref value="mymacchina"/&gt;
+		&lt;parametermap"&gt;
+			&lt;entry key="anno" value="2001" type="Integer"/&gt;
+			&lt;entry key="stato" value="come nuova"/&gt;
+			&lt;entryref ... /&gt;
+			&lt;entrymap ... /&gt;
+		&lt;parametermap"/&gt;
+		&lt;parameterlist"&gt;
+			&lt;entry value="2001" type="Integer"/&gt;
+			&lt;entry value="come nuova"/&gt;
+			&lt;entryref ... /&gt;
+			&lt;entrymap ... /&gt;
+			&lt;entrylist ... /&gt;
+		&lt;parametermap"/&gt;
+		&lt;entrylist key="recapiti"&gt;
+			&lt;entry value="06.59.58.00.00"/&gt;
+			&lt;entry value="06.59.58.00.01"/&gt;
+			&lt;entry value="06.59.58.00.02"/&gt;
+		&lt;/entrylist&gt;
+	&lt;/beancontext&gt;
+
+&lt;/context&gt;
+
+					</source>	
+					
+			</subsection>
+		</section>
+	</body>
+</document>	

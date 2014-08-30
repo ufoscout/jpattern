@@ -1,0 +1,27 @@
+<assembly>
+
+	<!-- This assembly produces a distributable zip ready to install, configure, and run -->
+	
+	<id>app-dist</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<!-- <outputDirectory>applicationdist</outputDirectory> -->
+	 <includeBaseDirectory>false</includeBaseDirectory> 
+
+	<dependencySets>
+		<!--
+		<dependencySet>
+			<outputDirectory>passwordgenerate</outputDirectory>
+			 <includes>
+				<include>org.jod:configreader</include>
+			  </includes>
+		</dependencySet>
+		-->
+          <dependencySet>
+              <useProjectArtifact>true</useProjectArtifact>
+              <outputDirectory>lib</outputDirectory>
+          </dependencySet>
+	</dependencySets>
+
+</assembly>

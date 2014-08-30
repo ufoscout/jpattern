@@ -1,0 +1,14 @@
+<context>
+
+  	<beancontext id="jodreplacer" classname="org.jod.configreader.property.CryptReplacerPropertyReader">
+	    <entry key="location" value="./applconf/extracontext/extracontext1_1.properties"/>		
+		<entryref key="encrypter" value="desencrypterbean"/>	
+  	</beancontext>
+
+  	<beancontext id="desencrypterbean" classname="com.jpattern.ioc.desencrypter.DesEncrypter" />	
+	
+	<beancontext id="residenza-extra1_1" classname="com.jpattern.ioc.model.xml.Residenza">
+   		<entry key="indirizzo" value="${indirizzo1_1}"/>
+  	</beancontext>
+  	
+</context>

@@ -1,0 +1,33 @@
+<document>
+	<properties>
+		<author email="claudio.quaresima@postecom.it">
+			Claudio Quaresima
+		</author>
+		<title>Configurator Reader - Index</title>
+	</properties>
+
+	<head></head>
+
+	<body>
+		<section name="Configurator Reader">
+		<p>
+			Un Lettore di configurazioni che sa iniettare oggetti leggendo da un semplice file xml.
+		</p>	
+		<p>
+			Pensiamo ad un tipico file di configurazione di una applicazione magari in xml
+				 che permette di gestire una struttura  n-dimensionale
+				<br/>
+				Il primo problema e' leggere il file e poi creare degli oggetti a partire dalle informazioni lette.... per cui un bel file di properties
+				e' decisamente piu' comodo.... :)
+				<br/>
+				a meno che tutto questo non si faccia con una riga di codice................. 
+				<br/>
+
+				<source>
+ConfiguratorBean aConfigurator =(ConfiguratorBean)new ContextBeanFactory(DEMO_FILE).get("myconfig");
+				</source>					
+				vediamo come: <a href="per-iniziare.html">Per Iniziare</a>
+		</p>				
+		</section>
+	</body>
+</document>	

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+	<properties>
+		<author email="francesco.cina@yahoo.com">
+			Francesco Cina'
+		</author>
+		<title>Introduction</title>
+	</properties>
+
+	<head></head>
+
+	<body>
+		<section name="JPATTERN-GWT: everything you need to implement the MVP architecture with GWT and restful">
+		<p>
+			This project manage most of the complexity in the development of a MVP architecture when you want
+			to use a pure restful server side.
+			<br/>GWT is used only a compile time to generate the client javascript. No dependency on GWT libraries are present
+			at runtime.
+			<br/><br/>
+			The framework lives around the concept of "event". Every user action triggers a specific event. 
+		</p>	
+		</section>
+	</body>
+</document>	

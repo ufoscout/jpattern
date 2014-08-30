@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+	<properties>
+		<author email="ufoscout@yahoo.it">
+			Francesco Cina'
+		</author>
+		<title>jPattern Core - Logging</title>
+	</properties>
+
+	<head></head>
+
+	<body>
+		<section name="Logging">
+			Il servizio di logger offerto dal jusk-core offre tutte le opzioni presenti nelle librerie di logging piu' famose.
+			E' possibile loggare su file, su console, inviare mail, ed implementando una sola interfaccia si puo' estendere 
+			semplicemente il servizio permettendo di loggare su disparate periferiche (database, pagine web...).
+			L'astrazione dall'implementazione fa si che si possa cambiare completamente la configurazione senza mai dover
+			modificare il codice delle classi che fanno uso del logger.
+		</section>
+		
+		<section name="Configurazione veloce"> 
+		Il modo piu' semplice e veloce di implementare il logger e' quello di utilizzare le classi LoggerConfig e 
+		SimpleLoggerServiceBuilder.
+		
+			<source>
+LoggerConfig loggerConfig = new LoggerConfig();
+
+// Livello di logging sulla console
+loggerConfig.setConsoleLoggerlevel(ILoggerService.INFO);
+
+// Livello di logging sul file
+loggerConfig.setFileLoggerlevel(ILoggerService.DEBUG);
+// Path dei file
+loggerConfig.setLogFile("./logPath/logFile.log");
+// Massimo numero di file di backup su cui ruotare
+loggerConfig.setMaxFileBackupNumber(10);
+// Massima grandezza in MB di un singolo file di log
+loggerConfig.setMaxFileSize(15);
+
+// Livello di logging via mail
+loggerConfig.setMailLoggerlevel(ILoggerService.ERROR);
+loggerConfig.setMailFrom("mago@postecom.it");
+loggerConfig.setMailTo("mario@poste.it ; carlo@hotmail.com ; gino@gino.deu ");
+loggerConfig.setMailSubject( "oggetto della mail" );
+
+// Per ogni classpath si puo' definire un livello di log specifico		
+Map&lt;String, String&gt; classpathLoggerlevelMap = new HashMap&lt;String, String&gt;();
+classpathLoggerlevelMap.put("it.postecom.packageCheNonDeveLoggare", ILoggerService.OFF);
+classpathLoggerlevelMap.put("it.postecom.pippo", ILoggerService.WARNING);
+classpathLoggerlevelMap.put("it.postecom.pluto", ILoggerService.ERROR);
+loggerConfig.setClasspathLoggerLevelMap(classpathLoggerlevelMap );
+
+// la variabile mailService deve essere inizializzata ad un valido servizio mail oppure al NullMailService()
+		
+// Costruisco il servizio
+ILoggerService loggerService = (ILoggerService) new SimpleLoggerServiceBuilder(IServicesName.LOGGERSERVICE, loggerConfig, mailService).build();
+			</source>
+			<br/>
+			Il metodo del LoggerConfig setMailTo prende in ingresso una String di email separate dal carattere ';' oppure una List&lt;String&gt; dove 
+			ogni elemento e' una email valida.
+			<br/>
+			La struttura del LoggerConfig e' pensata affinche' possa essere facilmente utilizzato con il Configurator, in tal caso la stessa
+			configurazione espressa sopra e' effettuata via xml nel seguente modo:
+			
+			<source>
+&lt;beancontext id="loggerConfigValue" classname="org.jusk.core.log.LoggerConfig"&gt;
+		&lt;entry key="logFile" value="./logPath/logFile.log"/&gt;
+		&lt;entry key="maxFileBackupNumber" value="10" type="int"/&gt;
+		&lt;entry key="maxFileSize" value="15" type="int"/&gt;
+		&lt;entry key="fileLoggerlevel" value="debug"/&gt;
+		&lt;entry key="consoleLoggerlevel" value="info"/&gt;
+		&lt;entry key="mailLoggerlevel" value="debug"/&gt;
+		&lt;entry key="mailTo" value="mario@poste.it ; carlo@hotmail.com ; gino@gino.deu "/&gt;
+		&lt;entry key="mailFrom" value="mago@postecom.it"/&gt;
+		&lt;entry key="mailSubject" value="oggetto della mail"/&gt;
+		&lt;entrymap key="classpathLoggerLevelMap"&gt;
+			&lt;entry key="it.postecom.packageCheNonDeveLoggare" value="off"/&gt;
+			&lt;entry key="it.postecom.pippo" value="warning"/&gt;
+			&lt;entry key="it.postecom.pluto" value="error"/&gt;
+		&lt;/entrymap&gt;
+&lt;/beancontext&gt;
+			</source>  
+			
+			<br/> I valori validi indicanti il livello di log sono i seguenti:
+			<ul>
+				<li>off</li>
+				<li>trace</li>
+				<li>debug</li>
+				<li>info</li>
+				<li>warning</li>
+				<li>error</li>
+			</ul>
+		</section>
+		<section name="Configurazione specifica">
+		Utilizzando il LoggerConfigurator insieme al SimpleLoggerServiceBuilder si puo' ottenere rapidamente una configurazione
+		che va bene nella maggior parte dei casi.
+		Laddove sia necessaria una configurazione particolare, la costruzione del logger passa attraverso il 
+		LoggerServiceBuilder e le specifiche implementazioni dell'interfaccia IExecutor (o meglio della sua sottoclasse astratta
+		AExecutor). 
+		Ogni oggetto IExecutor registrato sul servizio di logger viene attivato al verificarsi di un evento di logging, la concatenazione
+		di n IExecutor permette di poter compiere qualsiasi numero e tipo di azioni per ogni evento. 
+		
+		<source>
+String logfile = "target/temp/testLogFile.log";
+int maxFileBackupNumber = 10;
+int maxFileSize = 5;
+
+//Configuro un IExecutor che e' capace di scrivere su file 
+ILogFileExecutorStrategy fileExecutorStrategy = new RollingLogFileExecutorStrategy(logfile, maxFileSize, ILogFileWriter.KILOBYTE, maxFileBackupNumber);
+IExecutor fileExecutor = new LogFileExecutor(fileExecutorStrategy);
+
+
+//Configuro un IExecutor che scrive su un PrintWriter generico
+IExecutor printWriterExecutor = new PrintWriterExecutor( new PrintWriter(System.out, true), fileExecutor);
+
+//Configuro un ulteriore IExecutor specifo di una applicazione
+IExecutor executorSpecifico = new ExecutorSpecifico( parametro0, ..., parametroN, printWriterExecutor);
+
+//Passo la catena di IExecutor al LoggerServiceBuilder ed ottengo il servizio di logger
+LoggerServiceBuilder loggerServiceBuilder = new LoggerServiceBuilder( IServicesName.LOGGERSERVICE, executorSpecifico);
+ILoggerService loggerService = (ILoggerService) loggerServiceBuilder.build();
+
+		</source>
+		</section>
+		
+		<section name="Utilizzo del logger">
+		Una volta creato il servizio di logger, loggare e' facile:
+		<source>
+// loggerService e' del tipo ILoggerService 
+ILogger logger = loggerService.logger(this.getClass());
+
+logger.trace("nomeMetodo", "trace message");
+
+logger.debug("nomeMetodo", "debug message");
+
+logger.info("nomeMetodo", "info message");
+
+logger.warn("nomeMetodo", "warn message");
+
+logger.error("nomeMetodo", "error message");
+
+logger.error("nomeMetodo", "error message with exception", new NullPointerException());
+		</source>
+		Al contrario di logger come Log4j, qui prendiamo in ingresso anche il nome del metodo che lancia l'evento di log, questo evita che durante
+		l'esecuzione del programma debba essere fatto il parsing dello stacktrace alla ricerca del nome del metodo chiamante (per chi non lo 
+		sapesse l'accesso allo stacktrace e' considerata dalla Sun una azione assolutamente da evitare in quanto di una lentezza terrificante,
+		logger come Log4J accedono ed effettuano il parsing dello stacktrace ad OGNI evento di log...). 
+		</section>
+		
+		<section name="Loggare utilizzando Log4J">
+		Come gia' detto, implementando l'interfaccia IExecutor posso aggiungere tutte le funzionalita' desiderate.
+		Loggare su log4j (oppure 'anche' su log4j) e' questione di aggiungere un IExecutor (in questo caso e' gia' implementato).
+		Basta aggiugnere alla catena di IExecutor il seguente:
+		<source>
+IExecutor executor = new Log4JExecutor();
+		</source>
+		Ora basta passare questo IExecutor al LoggerServiceBuilder ed abbiamo finito!
+		Ora l'applicazione logga anche su log4j (assicurarsi che log4j sia presente tra le dipendenze).
+		Abbiamo cambiato completamente sistema di logging, siamo passati dal logger di jusk-core a log4j,
+		senza dover modificare neppure una riga delle classi del nostro codice (come sarebbe successo se in ognuna delle 
+		nostre classi avessimo dichiarato una implementazione specifica di un logger?).  
+		</section>
+	</body>
+</document>	

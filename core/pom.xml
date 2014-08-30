@@ -1,0 +1,90 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.jpattern</groupId>
+		<artifactId>jpattern-parent</artifactId>
+		<version>1.2.0</version>
+	</parent>
+	
+	<artifactId>jpattern-core</artifactId>
+	<packaging>jar</packaging>
+	<version>3.6.3-SNAPSHOT</version>
+
+	<scm>
+		<connection>scm:svn:https://jpattern.googlecode.com/svn/trunk/core</connection>
+		<developerConnection>scm:svn:https://jpattern.googlecode.com/svn/trunk/core</developerConnection>
+		<!-- <tag>HEAD</tag> -->
+		<url>http://code.google.com/p/jpattern</url>
+	</scm>
+	
+	<dependencies>
+		<!-- BEGIN - compile scope -->
+		<dependency>
+			<groupId>com.jpattern</groupId>
+			<artifactId>jpattern-shared</artifactId>
+			<version>3.5.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jpattern</groupId>
+			<artifactId>jpattern-logger</artifactId>
+			<version>3.6.0</version>
+		</dependency>
+	    <dependency>
+	    	<groupId>javax.mail</groupId>
+	    	<artifactId>mail</artifactId>
+	    	<version>1.4.4</version>
+	    	<optional>true</optional>
+	    </dependency>
+	    <dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-log4j12</artifactId>
+		    <version>1.6.1</version>
+		    <optional>true</optional>
+		</dependency>
+		<!-- END - compile scope -->
+		
+		<!-- BEGIN - test scope -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>3.0.7.RELEASE</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	   	<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.3.153</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.4</version>
+			<scope>test</scope>
+		</dependency>
+	    <dependency>
+		    <groupId>dumbster</groupId>
+		    <artifactId>dumbster</artifactId>
+		    <version>1.6</version>
+		    <scope>test</scope>
+		    <exclusions>
+		        <exclusion>
+		          <groupId>javax.mail</groupId>
+		          <artifactId>mail</artifactId>
+		        </exclusion>
+		        <exclusion>
+		          <groupId>javax.activation</groupId>
+		          <artifactId>activation</artifactId>
+		        </exclusion>
+	      	</exclusions> 
+		</dependency>
+		<!-- END - test scope -->
+	</dependencies>
+
+</project>

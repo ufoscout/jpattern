@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+	<properties>
+		<author email="ufoscout@yahoo.it">
+			Francesco Cina'
+		</author>
+		<title>jpattern-core - Dependency Injection</title>
+	</properties>
+
+	<head></head>
+
+	<body>
+		<section name="Dependency Injection e IoC">
+			Con l'implementazione di poche interfacce possiamo realizzare una architettura completamente astratta dalle
+			specifiche implementazioni dei servizi da cui dipende:
+			<br/><br/>
+			<img src="images/Diagramma1.png" border="0"/>
+			<br/><br/>
+			L'obiettivo e' quello di poter cambiare in qualsiasi momento l'implementazione di una componente
+			senza dover modificare nulla del codice che la utilizza. 
+			<br/>Una generica classe, ad esempio, chiama il metodo "write()" di una interfaccia, non ne conosce l'implementazione, 
+			perche' questa gli verrà iniettata dall'esterno a runtime. In tal modo, per il nostro codice, scrivere su un file,
+			su un db, inviare output su un ws o fare tutte e tre le cose insieme, diventa esattamente la stessa cosa, lui fa
+			sempre e solo "write()".
+			<br/>Possiamo programmare non preoccupandoci assolutamente di 'cosa' realmente stiamo utilizzando.
+			<br/><br/>
+			Se in tutto cio' inseriamo anche l'utilizzo del Configurator, che ci permette di inizializzare oggetti configurati
+			in un file xml esterno, possiamo creare implementazioni specifiche di ogni servizio a partire da un file di configurazione
+			realizzando cosi' una completa Inversione di Controllo (IoC).
+			<br/>In questo modo il comportamento dell'intera applicazione puo' essere espanso e modificato senza neppure dover
+			ricompilare.
+		</section>
+		<section name="Come funziona in pratica">
+			Immaginiamo la seguente richiesta di un cliente: realizzare una applicazione che copia un file dalla cartella A 
+			alla cartella B e logga su un file il risultato dell'operazione.
+			<br/>
+			Prima di tutto ci serve un servizio per la getione delle cartelle dove leggere e scrivere i file, per noi saranno generiche risorse,
+			utilizzeremo infatti l'interfaccia IResource per indicare una risorsa qualunque, nel nostro caso specifico sara' un path locale 
+			(ma questo l'applicazione non lo sa...). 
+			<br/>Il vantaggio di utilizzare l'interfaccia IResources invece della classe java.io.File sta nel fatto che lavorare sempre 
+			con interfaccie permette di tenerci astratti dal contesto. La classe LocalResource implementa l'interfaccia IResources,
+			utilizzando al suo interno java.io.File per scrivere e leggere su path locali.  
+			<br/>I due metodi di nostro interesse di IResources sono i seguenti:
+			<ul>
+				<li>IFile getFile(String filename): restituisce un oggetto IFile che rappresenta un file all'interno della risorsa</li>
+				<li>IFile create(String filename, String contenutoDelFile): crea un nuovo file nella risorsa e lo restituisce</li>
+			</ul>
+			Con questi due metodi possiamo realizzare la nostra applicazione.
+			<br/><br/>Creiamo ora il nostro servizio per la gestione delle IResources (e' una interfaccia ovviamente):
+			<source>
+public interface IResourceService extends IService {
+	IResource resource(String name);
+}
+			</source>
+			<br/>La sua implementazione:
+			<source>
+public class ResourceService implements IResourceService {
+	private Map&lt;String, IResource&gt; resourcesMap;
+	private String name;
+
+	ResourceService(String name, Map&lt;String, IResource&gt; resourcesMap) {
+		this.resourcesMap = resourcesMap;
+		this.name = name;
+	}
+	
+	public IResource resource(String name) {
+		if( resourcesMap.containsKey(name)){
+			return resourcesMap.get(name);
+		}
+		return new NullResource();
+	}
+
+	public String getName() {
+		return name;
+	}
+
+}
+			</source>
+			
+			<br/>E la classe che si occupa di costruirla:
+			<source>
+public class ResourceServiceBuilder extends AServiceBuilder {
+
+	private Map&lt;String, IResource&gt; resourcesMap;
+
+	public ResourceServiceBuilder(String aServiceName , Map&lt;String, IResource&gt; resourcesMap ) {
+		super(aServiceName);
+		this.resourcesMap = resourcesMap;
+	}
+
+	public IService build() {
+		return new ResourceService(name(), resourcesMap);
+	}
+
+}			
+			</source>
+			
+			<br/>Implementiamo ora la classe che inizializza i servizi necessari, ovvero il logger e le risorse:
+			<source>
+public class Application implements IApplication {
+
+	private ApplicationService applicationService;
+
+	public Application(ApplicationService applicationService) {
+		this.applicationService = applicationService;
+	}
+	
+	public void startApplication() throws Exception {
+		
+		// ---------------BEGIN LOG-------------------------------------------------------------
+		int maxFileBackupNumber = 10;
+		int maxFileSize = 10;
+		String logFile = "log/logFile.log";
+		//Configuro Logging su File
+		ILogFileExecutorStrategy fileExecutorStrategy = new RollingLogFileExecutorStrategy(logFile , maxFileSize, ILogFileWriter.MEGABYTE, maxFileBackupNumber);
+		IExecutor fileExecutor = new LogFileExecutor(fileExecutorStrategy);
+		
+		//Configuro Logging su console
+		PrintWriter printWriter = new PrintWriter(System.out, true);
+		IExecutor consoleExecutor = new PrintWriterExecutor( printWriter , fileExecutor);
+		
+		// Costruisco servizio di log
+		applicationService.build( new LoggerServiceBuilder( IServicesName.LOGGERSERVICE, consoleExecutor ) );
+		// ---------------END LOG-------------------------------------------------------------
+		
+		// ---------------BEGIN RISORSE-------------------------------------------------------------
+		// Costruisco le risorse di input ed output per i file
+		Map&lt;String, IResource&gt; resourcesMap = new HashMap&lt;String, IResource&gt;();
+		resourcesMap.put("input", new LocalResource("/file/input", CharacterEncoding.UTF_8));
+		resourcesMap.put("output", new LocalResource("/file/output", CharacterEncoding.UTF_8));
+		
+		// costruisco il servizio che gestisce le risorse
+		applicationService.build( new ResourceServiceBuilder( "risorse", resourcesMap ) );
+		// ---------------END RISORSE-------------------------------------------------------------
+	}
+	
+	public void stopApplication() {
+		applicationService.removeAllServices();
+	}
+}			
+			</source>
+			Abbiamo scelto di utilizzare una mappa per poter dichiarare tutte le risorse che vogliamo.
+			<br/>Nella mappa abbiamo poi inserito due implementazione di IResources che sono LocalResource.
+			<br/><br/>
+			Per effettuare il lavoro richiesto utilizzeremo il pattern Command attraverso l'interfaccia ICommand. Costruiamo quindi
+			una classe che implementa ICommand e su questa faremo iniezione dei servizi.
+			<br/>
+			Quindi implementiamo l'interfaccia ICommand, per creare il comando che fara' quanto richiesto dal cliente:
+			<source>
+public class FileCopyCommand extends ACommand {
+
+	private static final long serialVersionUID = 1L;
+	private ILogger logger;
+	private StringBuffer fileName;
+	
+	public FileCopyCommand(StringBuffer fileName) {
+		this( fileName, new NullCommand() );
+	}
+	
+	public FileCopyCommand(StringBuffer fileName, ICommand aSuccessor) {
+		super(aSuccessor, new NullCommandResult());
+		this.fileName = fileName;
+	}
+	
+	protected void internalRollBack() {
+	}
+
+	protected void result(IResult result) {
+		logger = ((ILoggerService)provider().getService(IServicesName.LOGGERSERVICE)).logger(FileCopyCommand.class);
+	
+		logger.info("execute", "copy file " + fileName.toString() );
+		
+		IResource source = ((IResourceService) provider().getService("risorse")).resource("input");
+		IResource destination = ((IResourceService) provider().getService("risorse")).resource("output");
+		
+		try {
+			IFile nuovoFile = source.getFile(fileName.toString());
+			IFile vecchioFile = destination.create(fileName.toString(), "");
+			
+			IFileReader fileReader = vecchioFile.getFileReader();
+			IFileWriter fileWriter = nuovoFile.getFileWriter(true);
+			
+			while(fileReader.hasNextLine()) {
+				fileWriter.println( fileReader.readLine() );
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+}
+			</source>
+			Invece di implementare direttamente ICommand, abbiamo esteso ACommand, una classe astratta che implementa parte delle funzionalita' di
+			ICommand, cosi' non dobbiamo riscriverle. 
+			<br/>Si puo' vedere che all'interno del codice del comando vengono richiesti dei servizi ad un provider tramite il metodo provider(), tale 
+			metodo restituisce il provider che gli verra' iniettato (tramite il metodo di ICommand visit(IProvider)) dalla classe che utilizzera' 
+			il comando.
+			<br/>
+			A questo punto abbiamo i nostri servizi, le risorse astratte, un gestore di servizi ed il nostro comando, 
+			ora implementare il main e' cosa di poche righe:
+			<source>
+public class SuperCopiaFile {
+
+	public void go(String nomeFileDaCopiare) throws Exception {
+		ApplicationService applicationService = new ApplicationService();
+		Application application = new Application( applicationService );
+		application.startApplication();
+		
+		ICommand command = new FileCopyCommand( new StringBuffer(nomeFileDaCopiare));
+		command.visit(applicationService);
+		command.exec();
+	}
+	
+	public static void main(String[] args) throws Exception {
+		String nomeFileDaCopiare = args[0];
+		new SuperCopiaFile().go(nomeFileDaCopiare );
+	}
+	
+}		
+			</source>
+			finito. Il main ha iniettato il provider che desidera sia utilizzato (in questo caso e' l'unico, ma possiamo averne infiniti), sul comando 
+			chiamando il metodo visit(). 
+			<br/><br/>Ora andremo a vedere quale e' la parte bella di lavorare in questo modo, cioe' quella che viene dopo che abbiamo finito!
+			<subsection name="La parte bella: le modifiche">
+				Ok la nostra applicazione e' finita e funzionante, ora arriva il cliente, la vede e dice: "bella, solo che ci siamo accorti
+				che i file e' meglio leggerli su una cartella remota in ftp, e poi vorremmo loggare su un db perche' e' piu' facile ricercare
+				i dati.".
+				<br/>La maggior parte dei programmatori a questo punto impreca perche' il proprio software non ha una buona struttura.
+				<br/>Ma non e' il nostro caso :) 
+				<br/>La nostra risposta al cliente e' "certo, datemi una mezz'oretta.".
+				<br/>Non dobbiamo cambiare neppure una riga di tutta la parte operativa, basta cambiare cio' che iniettiamo nei comandi:
+				cioe' cambiamo solo la classe application:
+				<source>
+public class Application implements IApplication {
+
+	private ApplicationService applicationService;
+
+	public Application(ApplicationService applicationService) {
+		this.applicationService = applicationService;
+	}
+	
+	public void startApplication() throws Exception {
+		
+		// ---------------BEGIN LOG-------------------------------------------------------------
+		int maxFileBackupNumber = 10;
+		int maxFileSize = 10;
+		String logFile = "log/logFile.log";
+		//Configuro Logging su File
+		ILogFileExecutorStrategy fileExecutorStrategy = new RollingLogFileExecutorStrategy(logFile , maxFileSize, ILogFileWriter.MEGABYTE, maxFileBackupNumber);
+		IExecutor fileExecutor = new LogFileExecutor(fileExecutorStrategy);
+		
+		//Configuro Logging su console
+		PrintWriter printWriter = new PrintWriter(System.out, true);
+		IExecutor consoleExecutor = new PrintWriterExecutor( printWriter , fileExecutor);
+		
+		<b>// AGGIUNGIAMO UN NUOVO EXECUTOR CHE AD OGNI LOG SCRIVE SU UN DB:
+		IExecutor databaseExecutor = new DatabaseExecutor("url","username","password", consoleExecutor);</b>
+		
+		// Costruisco servizio di log
+		applicationService.build( new LoggerServiceBuilder( IServicesName.LOGGERSERVICE, databaseExecutor ) );
+		// ---------------END LOG-------------------------------------------------------------
+		
+		// ---------------BEGIN RISORSE-------------------------------------------------------------
+		// Costruisco le risorse di input ed output per i file
+		Map&lt;String, IResource&gt; resourcesMap = new HashMap&lt;String, IResource&gt;();
+		
+		<b>// CAMBIAMO QUESTA RIGA COME SEGUE: 
+		resourcesMap.put("input", new FTPResource("indirizzo", "utenza", "password", CharacterEncoding.UTF_8));</b>
+		
+		resourcesMap.put("output", new LocalResource("/file/output", CharacterEncoding.UTF_8));
+		
+		// costruisco il servizio che gestisce le risorse
+		applicationService.build( new ResourceServiceBuilder( "risorse", resourcesMap ) );
+		// ---------------END RISORSE-------------------------------------------------------------
+	}
+	
+	public void stopApplication() {
+		applicationService.removeAllServices();
+	}
+}			
+				</source>
+				fine. Abbiamo implementato due nuove classi: FTPResource e DatabaseExecutor, le abbiamo aggiunte all'applicazione, ora queste
+				verranno iniettate nella parte operativa del codice che non verra' assolutamente toccata (nel command si lavora solo con le 
+				interfacce).
+				<br/><br/>
+				E se ora il cliente vuole che il file venga copiato in piu' destinazioni? Che facciamo? Dobbiamo cambiare il codice?
+				<br/>Assolutamente no! Basta creare un decorator dell'IResources ed iniettare quello... semplice no?!
+				
+			</subsection>
+		</section>
+	</body>
+</document>

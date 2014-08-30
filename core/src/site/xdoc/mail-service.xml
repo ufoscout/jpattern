@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+	<properties>
+		<author email="francesco.cina@postecom.it">
+			Francesco Cina'
+		</author>
+		<title>jPattern Core - Mail Service</title>
+	</properties>
+
+	<head></head>
+
+	<body>
+		<section name="Mail Service">
+			To use the default mail service you need to import the following artifact in your pom.xml:
+			<source>
+	    &lt;dependency&gt;
+	    	&lt;groupId&gt;javax.mail&lt;/groupId&gt;
+	    	&lt;artifactId&gt;mail&lt;/artifactId&gt;
+	    	&lt;version&gt;1.4.4&lt;/version&gt;
+	    	&lt;scope&gt;compile&lt;/scope&gt;
+	    &lt;/dependency&gt;
+	    	</source>
+		</section>
+	</body>
+</document>	

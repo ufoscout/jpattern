@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="jPattern Core">
+	<bannerLeft>
+		<name>jPattern Core</name>
+		<!-- <src>images/apache-maven-project.png</src> -->
+		<href>http://www.jpattern.com</href>
+	</bannerLeft>
+	<body>
+		<!--
+		<links>
+			<item name="indexer-core"
+				href="#/it.postecom.modules.indexer-core/indexer-core" />
+			<item name="documental"
+				href="#/it.postecom.modules.documental/documental" />
+		</links>
+		-->
+		<menu name="${project.name}">
+			<item name="Introduction" href="index.html" />
+			<item name="Release Notes" href="release-notes.html" />
+		</menu>
+	
+		<menu name="Documentazione">
+			<item name="Dependency Injection - IoC" href="dependency-injection.html" />
+			<item name="Command Pattern" href="pattern-command.html" />
+			<item name="Logger" href="logging.html" />
+			<item name="Mail Service" href="mail-service.html" />
+			<item name="Work with XML files" href="xml.html" />
+			<item name="Work with TXT files" href="textfiles.html" />
+		</menu>
+
+		${reports}
+	</body>
+</project>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root_tag>
+    <subTag1 attributeToValue1="valore1" attributeToValue2="valore2" >1234
+		<subTag11>
+			<subTag111> mio valore </subTag111>
+		</subTag11>
+		5678
+		<subTag12>mio valore 12</subTag12>
+		<subTag13>mio valore 13</subTag13>
+	</subTag1>
+    <anotherSubTag>ciao</anotherSubTag>
+</root_tag>

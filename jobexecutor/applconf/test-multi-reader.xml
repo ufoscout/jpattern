@@ -1,0 +1,37 @@
+
+<context>
+<!--
+  <beancontext id="jodreplacer" classname="com.jpattern.ioc.property.CryptReplacerPropertyReader">
+-->
+
+  <beancontext id="jodreplacer" classname="com.jpattern.ioc.property.PropertyReaderComposite">
+	    <entrylist key="propertyReaderList">
+	    	<entryref value="jodreplacer-normal"/>
+	    	<entryref value="jodreplacer-crypt"/>
+		</entrylist>		
+  </beancontext>
+
+  <beancontext id="jodreplacer-normal" classname="com.jpattern.ioc.property.ReplacerPropertyReader">
+	    <entry key="location" value="./applconf/test-multi-reader.properties"/>		
+  </beancontext>
+  
+  <beancontext id="jodreplacer-crypt" classname="com.jpattern.ioc.property.CryptReplacerPropertyReader">
+	    <entry key="location" value="./applconf/test-multi-reader-crypt.properties"/>		
+		<entryref key="encrypter" value="desencrypterbean"/>	
+  </beancontext>
+
+  <beancontext id="desencrypterbean" classname="com.jpattern.ioc.desencrypter.DesEncrypter" />	
+  
+
+
+  <beancontext id="beanuno" classname="com.jpattern.ioc.model.xml.BeanUno">
+    
+    <entry key="attributereplaced" value="${normal.prop3.prop}"/>
+    <entry key="attributereplacedcrypted" value="$CRYPT{crypt.prop4.prop}"/>
+
+	<entry key="nome" value="mago"/>
+    <entry key="cognome" value="${overloaded.surname}"/>
+  
+  </beancontext>
+
+</context>

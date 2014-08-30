@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+	<properties>
+		<author email="ufoscout@yahoo.it">
+			Francesco Cina'
+		</author>
+		<title>jPattern Core - Working with xml files</title>
+	</properties>
+
+	<head></head>
+
+	<body>
+		<section name="Working with xml">
+			<subsection name="Read xml streams">
+				<subsection name="SAX parser">
+					A default SAX parser (event based, top to bottom traversing, no need to store the xml input in memory) is defined to work with xml streams.
+					<br/>The XmlReaderCommand java class is the entry point to read an xml stream.
+					<subsection name="Select all objects of a table">
+						<source>
+		...
+		//prepare the query
+		IOrmQuery&lt;Employee&gt; query = session.findQuery(Employee.class);
+
+		//This is the interface to implement with our specific parser
+		IXmlReaderStrategy xmlParserStrategy = ...
+		
+		//Define an input stream from a file
+		FileInputStream inputStream = new FileInputStream(xmlCorrettoFilePath);
+		
+		//an error handler is needed to manage parsing exception
+		ErrorHandler errorHandler = new NullErrorHandler();
+		
+		//launch the sax parser. The xml stream is read s
+		ICommand command = new XmlReaderCommand(inputStream, trimValues , xmlParserStrategy, errorHandler);
+		command.visit(getProvider());
+		command.exec();
+						</source>
+						
+					</subsection>
+				</subsection>
+				<subsection name="Default XmlReaderStrategy: automatic XML to Tree representation">
+					A default implementation of the IXmlReaderStrategy is provided by the class DefaultXmlReaderStrategy.
+					Using this default implementation the whole xml is readed and stored in a tree structured object.
+					<subsection name="DefaultXmlReaderStrategy declaration">
+						<source>
+		...
+		XmlElement xmlRootElement = new XmlElement();		
+		IXmlReaderStrategy xmlParserStrategy = new DefaultXmlParserStrategy( xmlRootElement );
+		...
+						</source>
+						at the end of the command execution the xmlRootElement will contain a tree representation, easy to navigate and inspect,
+						of the whole xml.
+						This is an easy way to work with xml of small and medium size.  
+					</subsection>
+				</subsection>			
+			</subsection>
+			<subsection name="Write xml streams">
+			
+			</subsection>
+		</section>
+	</body>
+</document>	

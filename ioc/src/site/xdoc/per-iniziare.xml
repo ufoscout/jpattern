@@ -1,0 +1,502 @@
+<document>
+	<properties>
+		<author email="claudio.quaresima@postecom.it">
+			Claudio Quaresima
+		</author>
+		<title>Configurator Reader - Per Iniziare</title>
+	</properties>
+
+	<head></head>
+
+	<body>
+		<section name="Per Iniziare">
+			<p>Immaginiamo che il seguente file xml sia un file di configurazione di una tipica applicazione:</p>
+			<br/>
+			<source>
+&lt;context&gt;
+
+	&lt;beancontext id="myconfig" classname="org.jod.configreader.demo.model.ConfiguratorBean"&gt;
+	
+		&lt;entry key="name" value="applicazione 123"/&gt;
+		&lt;entry key="uploadpath" value="/tmp/"/&gt;
+		&lt;entryref key="datasource" value="mydatasource"/&gt;
+
+		&lt;entrymap key="destinatarimail"&gt;
+			&lt;entry key="claudio.quaresima@postecom.it" value="Claudio Quaresima (Ufficio)"/&gt;
+			&lt;entry key="claudio.quaresima@gmail.com" value="Claudio Quaresima (Privata)"/&gt;
+		&lt;/entrymap&gt;
+
+	&lt;/beancontext&gt;
+
+	&lt;beancontext id="mydatasource" classname="org.jod.configreader.demo.model.MyDataSource"&gt;
+	
+			&lt;entry key="user" value="dbunico"/&gt;
+			&lt;entry key="password" value="unicodb"/&gt;
+			&lt;entry key="url" value="jdbc:oracle:thin:@192.168.116.16:1521:TESTAPDB"/&gt;
+			&lt;entry key="driver" value="oracle.jdbc.driver.OracleDriver"/&gt;
+			
+	&lt;/beancontext&gt;
+
+&lt;/context&gt;		
+			</source>
+			<br/>
+			<p>
+				dove abbiamo una serie di informazioni, un nome dell'aplicazione, una directory dove fare l'upload di file, una lista di destinari di indirizzi email a cui inviare qualche cosa,
+				errori, notifiche....
+				un datasource per accedere al db...				
+			</p>
+			<p>
+				Utilizzando il configreader con il seguente codice avremmo una istanza dell'oggetto org.jod.configreader.demo.model.ConfiguratorBean con tutte le info necessarie.
+			</p>	
+			<source>
+    public void testSimpleContext() throws Exception {
+        
+        // instanzio il context. La costante DEMO_FILE e' un path di un file o uno stream vedere API....
+        ContextBeanFactory aContext= new ContextBeanFactory(DEMO_FILE);
+        
+        // chiedo il bean con id = myconfig il mio punto di partenza della configurazione
+        Object aObjectConfigurator = aContext.get("myconfig");
+        
+        // casto il tipo di ritorno con quello che mi aspetto org.jod.configreader.demo.ConfiguratorBean
+        ConfiguratorBean aConfigurator = (ConfiguratorBean)aObjectConfigurator;
+           
+        
+        verifyAssert(aConfigurator);
+    }
+				
+			</source>	
+
+			<p>Nel metodo verifyAssert vengono solo fatti i controlli con le asserzioni di JUnit</p>	
+			<source>
+ private void verifyAssert(ConfiguratorBean aConfigurator) throws SQLException {
+        
+        assertEquals("applicazione 123",aConfigurator.getName());
+        assertEquals("/tmp/",aConfigurator.getUploadpath());
+        
+        // provo il datasource
+        DataSource datasource = aConfigurator.getDatasource();
+        // test che la connessione non sia nulla
+        assertNotNull( datasource.getConnection() );
+        
+        // verifico gli elementi della mappa la dimesione == 2
+        assertTrue( aConfigurator.getDestinatarimail().size()==2 );
+        
+    }				
+			</source>
+			<p>
+				Le classi org.jod.configreader.demo.model.ConfiguratorBean o org.jod.configreader.demo.model.MyDataSource sono ovviamente esterne al framework
+				il configreader le instanzia e setta i parametri indicati per cui e' importante che le classi esterne rispettino almeno le seguenti regole:
+			</p>	
+			<UL>
+				<LI/>Almeno un costruttore senza parametri
+				<LI/>Gli accessor in standard javaBean
+			</UL>
+			<br/>
+			<p>
+			Altra cosa che il configreader fa e' l'inizione degli oggetti dipendenti come la proprieta' del ConfiguratorBean si riferisce ad un DataSource la cui configurazione e' definita in un'altro bean
+			</p>
+			<p>
+					Per completezza si riportano i sorgenti del ConfiguratorBean e del MyDatasource:
+					<source>
+package org.jod.configreader.demo.model;
+
+import java.util.Map;
+
+import javax.sql.DataSource;
+
+public class ConfiguratorBean {
+
+    private String name;
+
+    private String uploadpath;
+
+    private DataSource datasource;
+
+    private Map destinatarimail;
+
+    public DataSource getDatasource() {
+        return datasource;
+    }
+
+    public void setDatasource(DataSource datasource) {
+        this.datasource = datasource;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getUploadpath() {
+        return uploadpath;
+    }
+
+    public void setUploadpath(String uploadpath) {
+        this.uploadpath = uploadpath;
+    }
+
+    public Map getDestinatarimail() {
+        return destinatarimail;
+    }
+
+    public void setDestinatarimail(Map destinatarimail) {
+        this.destinatarimail = destinatarimail;
+    }
+}
+
+					</source>
+					<br/>						
+					<source>
+package org.jod.configreader.demo.model;
+
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
+
+public class MyDataSource implements DataSource {
+
+    private String user;
+
+    private String password;
+
+    private String url;
+
+    private String driver;
+
+    public String getDriver() {
+        return driver;
+    }
+
+    public void setDriver(String driver) {
+        this.driver = driver;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public Connection getConnection() throws SQLException {
+        Connection conn = null;
+
+        try {
+            Class.forName(getDriver());
+            conn = DriverManager.getConnection(getUrl(), getUser(), getPassword());
+        }
+        catch (ClassNotFoundException x) {
+            throw new SQLException(x.getMessage());
+        }
+        return conn;
+    }
+
+    public Connection getConnection(String arg0, String arg1) throws SQLException {
+        return null;
+    }
+
+    public PrintWriter getLogWriter() throws SQLException {
+        return null;
+    }
+
+    public int getLoginTimeout() throws SQLException {
+        return 0;
+    }
+
+    public void setLogWriter(PrintWriter arg0) throws SQLException {
+    }
+
+    public void setLoginTimeout(int arg0) throws SQLException {
+    }
+
+}
+						
+					</source>	
+			</p>	
+		</section>
+				<section name="Iniezione sul setter ed Iniezione sul costruttore">
+			<p>Quanto visto nella precedente sezione mostra come effettuare iniezione sul setter, dalla versione 2.0 il Configuration Reader è in grado di effettuare
+			anche l'iniezione sul costruttore. Vediamo come fare...
+			L'iniezione sul setter come sopra presentata prevede la presenza, nell'oggetto da creare, di un costruttore pubblico senza argomenti, e se l'oggetto che voglio
+			istanziare ha solo un costruttore con argomenti? In tal caso dovrei aggiungere un nuovo costruttore senza argomenti e prevedere tutta una serie di setter 
+			per settare i campi che erano propri del costruttore... per evitare tutto ciò utilizziamo l'iniezione sul costruttore:
+			<br/>
+			Vogliamo che il Configuration Reader istanzi questo oggetto:</p>
+			<source>
+	package auto
+	class Macchina {
+		public Macchina(String modello, String cilindrata) {
+			//fa qualcosa
+			....
+		}
+		
+		public setCavalli(String cavalli) {
+			...
+		}
+	}
+			</source>
+			<br/>
+			<p>Dobbiamo quindi comunicare al Configuration Reader che vogliamo utilizzare il costruttore con due argomenti di tipo String, facciamo così:</p>			
+			<source>
+&lt;context&gt;
+
+	&lt;beancontext id="mymachine" classname="auto.Macchina"&gt;	
+			&lt;parameter value="ferrari"/&gt;
+			&lt;parameter value="5000"/&gt;
+			&lt;entry key="cavalli" value="900"/&gt;
+	&lt;/beancontext&gt;
+
+&lt;/context&gt;		
+			</source>
+			<br/>			
+			<p>Con queste poche righe ho creato i due argomenti da passare al costruttore (subito dopo la creazione verra' lanciato il setter sul campo "cavalli")</p>
+			</section>
+	</body>
+	
+	<section name="Iniettare oggetti diversi da String">
+			<p>La nostra classe Macchina ha al momento un costruttore che prende in ingresso due parametri String, ma questo ha poco senso visto che la cilindrata potrebbe essere 
+			espressa in qualcosa di piu' sensato, ad esempio un Integer... ed anche il setCavalli() sarebbe più intelligente se prendesse un Integer. Modifichiamo la classe Macchina
+			e vediamo cosa succede nell'xml:
+			<br/>
+			La nostra nuova 'Macchina':</p>
+			<source>
+	package auto
+	class Macchina {
+		public Macchina(String modello, String cilindrata) {
+			//fa qualcosa
+			....
+		}
+		
+		// un altro costruttore
+		public Macchina(String modello, Integer cilindrata) {
+			//fa qualcosa
+			....
+		}
+		
+		public setCavalli(Integer cavalli) {
+			...
+		}
+	}
+			</source>
+			<br/>
+			<p>Dobbiamo quindi comunicare al Configuration Reader che vogliamo utilizzare il costruttore con argomenti String,Integer facciamo così:</p>			
+			<source>
+&lt;context&gt;
+
+	&lt;beancontext id="mymacchina" classname="auto.Macchina"&gt;	
+			&lt;parameter value="ferrari"/&gt;
+			&lt;parameter value="5000" type="Integer"/&gt;
+			&lt;entry key="cavalli" value="900" type="Integer"/&gt;
+	&lt;/beancontext&gt;
+
+&lt;/context&gt;		
+			</source>
+			<br/>			
+			<p>Finito! L'attributo 'type' fa tutto per noi.<br/>
+				<br/>
+				I valori ammessi per 'type' sono i seguenti (sono autoesplicativi...):
+				<ul>
+				  <li>String (è il valore di default)</li>
+				  <li>Integer</li>
+				  <li>Double</li>
+				  <li>Byte</li>
+				  <li>Short</li>
+				  <li>Long</li>
+				  <li>Float</li>
+				  <li>Character</li>
+				  <li>Boolean</li>
+				  <li>StringBuffer</li>
+				  <li>BigInteger</li>
+				  <li>BigDecimal</li>
+				</ul>
+				
+				<br/>
+				Dalla versione 2.1 è possibile fare iniezione sul costruttore anche di tipi primitive, utizzando i seguenti valori per il tag "type":
+				<ul>
+				  <li>int</li>
+				  <li>double</li>
+				  <li>byte</li>
+				  <li>short</li>
+				  <li>long</li>
+				  <li>float</li>
+				  <li>char</li>
+				  <li>boolean</li>
+				</ul>
+				<i><b>ATTENZIONE:</b> l'iniezione sul costruttore di tipi primitive richiede una jvm 1.5 o superiore.</i>
+	
+			</p>
+			</section>
+			<br/>
+			<section name="Iniezione di altri bean sul costruttore">
+			<p>Per finire vediamo come possiamo iniettare sul costruttore altri oggetti definiti dal beancontext o delle Map, i tag per fare questo sono 'parameterref' e 'parametermap' 
+			(sono assolutamente speculari nell'uso ad 'entryref' ed 'entrymap'). 
+			<br/>Un rapido esempio:</p>
+			<source>
+	package auto
+	class MacchinaInVendita {
+		public MacchinaInVendita(Macchina modello, Map informazioniSulModello) { ... }
+	}
+			</source>
+			
+			<br/>
+			<p>Nel nostro xml:
+			</p>
+						<source>
+&lt;context&gt;
+
+	...
+
+	&lt;beancontext id="mymachinainvendita" classname="auto.MacchinaInVendita"&gt;	
+			&lt;parameterref value="mymacchina"/&gt;
+			&lt;parametermap"&gt;
+				&lt;entry key="anno" value="2001" type="Integer"/&gt;
+				&lt;entry key="stato" value="come nuova"/&gt;
+				&lt;entryref ... /&gt;
+				&lt;entrymap ... /&gt;
+			&lt;parametermap"/&gt;
+	&lt;/beancontext&gt;
+
+&lt;/context&gt;		
+			</source>
+			
+			</section>
+			
+			
+			<section name="Lavorare con piu' file di properties">
+			<p>Utilizzando la classe PropertyReaderComposite si possono dichiarare piu' PropertyReader e quindi
+			leggere le proprieta' da piu' file di testo.
+			In caso di chiavi duplicate su diversi file la priorita' sara' in base all'ordine in cui i file di properties
+			sono inseriti in lista nel PropertyReaderComposite.
+			<br/>Esempio:</p>
+						<source>
+&lt;context&gt;
+
+  &lt;beancontext id="jodreplacer" classname="org.jod.configreader.property.PropertyReaderComposite"&gt;
+	    &lt;entrylist key="propertyReaderList"&gt;
+	    	&lt;entryref value="jodreplacer-normal"/&gt;
+	    	&lt;entryref value="jodreplacer-crypt"/&gt;
+		&lt;/entrylist&gt;		
+  &lt;/beancontext&gt;
+
+  &lt;beancontext id="jodreplacer-normal" classname="org.jod.configreader.property.ReplacerPropertyReader"&gt;
+	    &lt;entry key="location" value="./applconf/test-multi-reader.properties"/&gt;		
+  &lt;/beancontext&gt;
+  
+  &lt;beancontext id="jodreplacer-crypt" classname="org.jod.configreader.property.CryptReplacerPropertyReader"&gt;
+	    &lt;entry key="location" value="./applconf/test-multi-reader-crypt.properties"/&gt;		
+		&lt;entryref key="encrypter" value="desencrypterbean"/&gt;	
+  &lt;/beancontext&gt;
+
+  &lt;beancontext id="desencrypterbean" classname="org.jod.configreader.desencrypter.DesEncrypter" /&gt;	
+  
+  &lt;beancontext id="beanuno" classname="org.jod.model.xml.BeanUno"&gt;
+    
+    &lt;entry key="attributereplaced" value="${normal.prop3.prop}"/&gt; &lt;!-- sara' valorizzato a "normal test replace" --&gt;	
+
+    &lt;entry key="attributereplacedcrypted" value="$CRYPT{crypt.prop4.prop}"/&gt;&lt;!-- sara' valorizzato a "pippo" --&gt;	
+
+	&lt;entry key="nome" value="mago"/&gt;&lt;!-- sara' valorizzato a "mago" --&gt;	
+
+    &lt;entry key="cognome" value="${overloaded.surname}"/&gt;&lt;!-- sara' valorizzato a "normal mago" --&gt;	
+  
+  &lt;/beancontext&gt;
+
+&lt;/context&gt;	
+			</source>
+			
+			<br/>file test-multi-reader.properties:
+									<source>
+normal.prop1.prop=normal ciao ciao
+normal.prop2.prop=normal bye bye
+normal.prop3.prop=normal test replace
+
+overloaded.surname = normal mago	
+			</source>
+			
+			<br/>file test-multi-reader-crypt.properties:
+			
+									<source>
+crypt.prop1.prop=crypt ciao ciao
+crypt.prop2.prop=crypt bye bye
+crypt.prop3.prop=crypt test replace
+
+#il valore originale e' "pippo" 
+crypt.prop4.prop=2CuDTLB52JA=
+
+overloaded.surname = crypto mago
+			</source>
+			
+			</section>
+			
+			
+			
+			<section name="Lavorare con piu' file xml">
+			<p>Per non dover lavorare con file xml di dimensioni esagerate, si puo' suddividere la dichiarazione
+			dei BeanContext in diversi file xml. I seguenti due esempi sono equivalenti: 
+			<br/>Esempio 1:</p>
+						<source>
+&lt;!-- file context.xml --&gt;						
+&lt;context&gt;
+	...
+	&lt;beancontext id="mymachina1" classname="auto.Macchina"&gt;
+		...	
+	&lt;/beancontext&gt;
+
+	&lt;beancontext id="mymachina2" classname="auto.Macchina"&gt;
+		...	
+	&lt;/beancontext&gt;
+	
+&lt;/context&gt;		
+			</source>
+			
+			<br/><br/>
+			Esempio 2:
+						<source>
+&lt;!-- file context.xml --&gt;						
+&lt;context&gt;
+
+	&lt;extracontext value="context2.xml"&gt;	
+	
+	...
+	&lt;beancontext id="mymachina1" classname="auto.Macchina"&gt;
+		...	
+	&lt;/beancontext&gt;
+
+&lt;/context&gt;	
+
+
+&lt;!-- file context2.xml --&gt;						
+&lt;context&gt;
+
+	&lt;beancontext id="mymachina2" classname="auto.Macchina"&gt;
+		...	
+	&lt;/beancontext&gt;
+	
+&lt;/context&gt;		
+			</source>
+			
+			</section>
+</document>	

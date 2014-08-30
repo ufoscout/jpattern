@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <module rename-to='it_ufoscout_gwt_helloworld'> -->
+<module>
+
+    <!-- Inherit the core Web Toolkit stuff. -->
+	<inherits name='com.google.gwt.junit.JUnit' />
+	<inherits name="com.google.gwt.logging.Logging"/>
+	
+	<inherits name="org.fusesource.restygwt.RestyGWT" />
+	<inherits name='com.kfuntak.gwt.json.serialization.GWTProJsonSerializer'/>
+
+    <!-- Other module inherits --> 
+    <inherits name='com.jpattern.gwt.jpattern'></inherits>
+
+    <!-- Specify the app entry point class. -->
+    <entry-point class='DummyEntryPoint' />
+  
+  <!-- <super-source path="code" /> -->
+  
+  <!-- <add-linker name="sso" /> -->
+  
+  <!-- <set-property name="user.agent" value="gecko1_8"/> -->
+	<set-property name="gwt.logging.enabled" value="TRUE"/> 
+	<set-property name="gwt.logging.logLevel" value="ALL"/>
+	<set-property name="gwt.logging.consoleHandler" value="DISABLED" />
+	<set-property name="gwt.logging.developmentModeHandler" value="DISABLED" />
+	<set-property name="gwt.logging.popupHandler" value="DISABLED" />
+	<set-property name="gwt.logging.systemHandler" value="ENABLED" />
+	
+</module>

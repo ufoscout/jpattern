@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+	<properties>
+		<author email="ufoscout@yahoo.it">
+			Francesco Cina'
+		</author>
+		<title>Base Library - Release notes</title>
+	</properties>
+
+	<head></head>
+
+	<body>
+		<section name="jPattern Core">
+		<p>
+			Una libreria che offre una raccolta omogenea di strumenti utili nello sviluppo di praticamente qualsiasi
+			applicazione sia di backoffice che web.
+			Questa libreria nasce come esercizio di rescrittura da zero del package org.jod.base utilizzato nel progetto PosteSalute,
+			fa largo uso di Generics ed e' necessaria una JVM 1.5 o superiore.
+
+			<br/><br/>Che cosa possiamo fare:
+			<br/><br/><a href="dependency-injection.html">IOC and Dependency injection: costruire una applicazione sfruttando Service Locator e Business Delegate</a>
+			<br/><br/><a href="pattern-command.html">Sfruttare il pattern Command</a>
+			<br/><br/><a href="logging.html">Logging 'astratto'</a>
+			<br/><br/><a href="job-thread-pool.html">Backoffice: comandare un batch da shell; un gestore di jobs multithreading</a>
+			<br/><br/><a href="mail-service.html">Mailing Service</a>
+			<br/><br/><a href="xml.html">Scrittura, lettura e parsing di un file xml</a>
+			<br/><br/><a href="textfiles.html">Gestire con i file di testo</a>
+		</p>	
+		</section>
+	</body>
+</document>	

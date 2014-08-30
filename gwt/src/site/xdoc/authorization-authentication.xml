@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+	<properties>
+		<author email="francesco.cina@yahoo.com">
+			Francesco Cina'
+		</author>
+		<title>Introduction</title>
+	</properties>
+
+	<head></head>
+
+	<body>
+		<section name="Authentication and authorization">
+		<p>
+			Starting with the release 2.42.0 the presenter layer implements a security system to whether show some components
+			in relation with the current user profile.
+			<br/>The use is near transparent to the developer. The developer should create a com.jpattern.gwt.client.security.UserSession
+			object when the user log in and set it in the SecurityContext.
+			<br/>Example:
+			<source>
+	// an IUserSession object should be user in the login phase,
+	// in this case the user "MickeyMouse" is logged in:
+	String name = "MickeyMouse";
+	boolean valid = true;
+	IUserSession userSession = new UserSession(name,valid);
+	// Set the user roles
+	userSession.getRoles().add("eatFromage");
+	userSession.getRoles().add("mouse");
+			
+	//now put the userSession object in the SecurityContext:
+	provider.getSecurityContext().setUserSession(userSession);
+	
+	//after this step all the presenters will use the userSession object to manage the user rights 
+			</source>
+			
+			<br/><br/>Every presenter can now define the needed rights to access:
+			<source>	
+	class MousePresenter extends APresenter {
+		MousePresenter() {
+			//This presenter will be shown only if the user has the role "mouse", then MickeyMouse can see it
+			allowedRole(new String[]{"mouse"}); 
+		}
+	}
+
+	class CatPresenter extends APresenter {
+		CatPresenter() {
+			//This presenter will be shown only if the user has the role "cat", then MickeyMouse cannot see it!!
+			allowedRole(new String[]{"cat"});
+		}
+	}
+	
+	class ValidPresenter extends APresenter {
+		ValidPresenter() {
+			//This presenter will be shown only if the user is valid. In most of the cases this means
+			//that simple the user is logged in. This is useful to show some page only to logged user 
+			allowOnlyValidUser(true); 
+		}
+	}
+			</source>	
+		
+		<br/>This simple system permits to have a powerful way to customise the view based on the user profile.
+		<br/>For example a page can contains the three presenters  MousePresenter, CatPresenter and ValidPresenter
+		but CatPresenter is not shown to MickeyMouse and MousePresenter is not shown to PegLegPete.
+		
+		<br/><br/>
+		A less secure way of customise a page is to use the methods of the IView interface:
+		<ul>
+			<li>void hideIfUserNotInRole(HasVisibility widget, String[] allowedRoles)</li>
+			<li>void hideIfUserValid(HasVisibility widget)</li>
+		</ul>
+		<br/>in that case a specific element of the view is hidden based on the specific condition.s
+		</p>	
+		</section>
+	</body>
+</document>	

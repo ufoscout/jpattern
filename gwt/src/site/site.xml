@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="jpattern-gwt">
+	<body>
+		<menu name="${project.name}">
+			<item name="Introduction" href="introduction.html" />
+			<item name="Release Notes" href="release-notes.html" />
+		</menu>
+	
+		<menu name="Documentation">
+			<item name="Authorization and authentication" href="authorization-authentication.html" />
+			<!-- <item name="Programmatic security" href="programmatic-security.html" />
+			<item name="Spring authentication" href="spring-authentication.html" /> -->
+		</menu>
+
+		${reports}
+	</body>
+</project>

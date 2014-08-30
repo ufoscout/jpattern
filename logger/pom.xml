@@ -1,0 +1,51 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.jpattern</groupId>
+		<artifactId>jpattern-parent</artifactId>
+		<version>1.2.0</version>
+	</parent>
+	
+	<artifactId>jpattern-logger</artifactId>
+	<packaging>jar</packaging>
+	<version>3.6.1-SNAPSHOT</version>
+
+	<scm>
+		<connection>scm:svn:https://jpattern.googlecode.com/svn/trunk/logger</connection>
+		<developerConnection>scm:svn:https://jpattern.googlecode.com/svn/trunk/logger</developerConnection>
+		<!-- <tag>HEAD</tag> -->
+		<url>http://code.google.com/p/jpattern</url>
+	</scm>
+
+	<dependencies>
+		<!-- BEGIN - provided scope -->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.16</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-api</artifactId>
+		    <version>1.6.3</version>
+		    <scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.6.3</version>
+			 <scope>provided</scope>
+		</dependency>
+		<!-- END - provided scope -->
+		<!-- BEGIN - test scope -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- END - test scope -->
+	</dependencies>
+
+</project>
